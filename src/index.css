@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "Noto Sans JP", system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: #0e1013;
+  color: #f2f3f0;
+  font-family: "Noto Sans JP", system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+button {
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
