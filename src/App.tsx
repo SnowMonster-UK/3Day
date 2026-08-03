@@ -8,7 +8,10 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen justify-center" style={{ background: "#0e1013", color: "#f2f3f0" }}>
-      <div className="relative flex w-full max-w-[460px] min-h-screen flex-col">
+      <div
+        className="relative flex w-full max-w-[460px] min-h-screen flex-col"
+        style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         {state.screen === "home" && (
           <HomeScreen
             dayIdx={state.dayIdx}
