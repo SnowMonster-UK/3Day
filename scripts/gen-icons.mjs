@@ -14,7 +14,11 @@ const outDir = path.resolve(__dirname, "../public");
 const sourcePath = path.resolve(__dirname, "./assets/icon-source.png");
 
 const roundedMask = (size) => {
-  const r = Math.round(size * 0.08);
+  // The source's own black-corner cut extends to roughly 6% of the canvas
+  // along the diagonal; a circular-arc mask only starts clearing pixels at
+  // ~0.293*r along the diagonal, so r needs real margin over that 6% or a
+  // black ring survives between the mask edge and the source's cut.
+  const r = Math.round(size * 0.22);
   return Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><rect x="0" y="0" width="${size}" height="${size}" rx="${r}" ry="${r}" fill="#fff"/></svg>`);
 };
 
