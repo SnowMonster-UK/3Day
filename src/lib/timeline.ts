@@ -21,7 +21,7 @@ export function buildTimeline(dayIdx: number, lv: number): Step[] {
   const out: Step[] = [];
   const push = (s: StepInit) => out.push({ name: "", jp: "", ...s });
 
-  push({ phase: "prep", sec: 10, name: "Get Ready", jp: day.title + " を始めます", vol: "10秒", set: "" });
+  push({ phase: "prep", sec: 10, name: "Get Ready", jp: "Starting " + day.title, vol: "10s", set: "" });
 
   const workStep = (name: string, jp: string, o: Omit<StepInit, "phase" | "name" | "jp">): StepInit => ({
     phase: "work",
@@ -33,44 +33,45 @@ export function buildTimeline(dayIdx: number, lv: number): Step[] {
   if (day.mode === "circuit") {
     const rounds = day.rounds ?? 1;
     const rest = day.rest ?? 30;
-    for (let r = 1; r <= rounds; r++) {
-      day.ex.forEach((ex, ei) => {
-        const L = ex.levels[lv];
-        const setLbl = r + "周目 / " + rounds + "・種目 " + (ei + 1) + "/" + day.ex.length;
+    day.ex.forEach((ex, ei) => {
+      const L = ex.levels[lv];
+      for (let r = 1; r <= rounds; r++) {
+        const setLbl = "Exercise " + (ei + 1) + "/" + day.ex.length + " · Round " + r + "/" + rounds;
         if (ex.sides) {
           const sec = L.sec ?? 30;
-          (["右", "左"] as const).forEach((side) =>
-            push(workStep(L.name, ex.jp, { sec, vol: sec + "秒（" + side + "）", set: setLbl, side }))
+          (["Right", "Left"] as const).forEach((side) =>
+            push(workStep(L.name, ex.jp, { sec, vol: sec + "s (" + side + ")", set: setLbl, side }))
           );
         } else {
-          push(workStep(L.name, ex.jp, { sec: Math.max(25, firstNum(L.reps) * 3), reps: L.reps, vol: L.reps + "回", set: setLbl, tapDone: true }));
+          const sec = L.sec ?? Math.max(25, firstNum(L.reps) * 3);
+          push(workStep(L.name, ex.jp, { sec, reps: L.reps, vol: L.reps + " reps", set: setLbl, tapDone: true }));
         }
-        const last = r === rounds && ei === day.ex.length - 1;
-        if (!last) push({ phase: "rest", sec: rest, name: "Rest", jp: "休憩", vol: rest + "秒", set: setLbl });
-      });
-    }
+        const last = ei === day.ex.length - 1 && r === rounds;
+        if (!last) push({ phase: "rest", sec: rest, name: "Rest", jp: "Take a breather", vol: rest + "s", set: setLbl });
+      }
+    });
   } else if (day.mode === "sets") {
     day.ex.forEach((ex, ei) => {
       const L = ex.levels[lv];
       const sets = ex.sets ?? 1;
       const rest = ex.rest ?? 30;
       for (let s = 1; s <= sets; s++) {
-        const setLbl = "種目 " + (ei + 1) + "/" + day.ex.length + "・" + s + "set / " + sets;
+        const setLbl = "Exercise " + (ei + 1) + "/" + day.ex.length + " · Set " + s + "/" + sets;
         if (ex.time) {
           const sec = L.sec ?? 30;
-          push(workStep(L.name, ex.jp, { sec, vol: sec + "秒", set: setLbl }));
+          push(workStep(L.name, ex.jp, { sec, vol: sec + "s", set: setLbl }));
         } else {
           const reps = ex.repsBySet ? ex.repsBySet[s - 1] : L.reps ?? "";
-          push(workStep(L.name, ex.jp, { sec: Math.max(25, firstNum(reps) * 3), reps, vol: reps + "回", set: setLbl, tapDone: true }));
+          push(workStep(L.name, ex.jp, { sec: Math.max(25, firstNum(reps) * 3), reps, vol: reps + " reps", set: setLbl, tapDone: true }));
         }
         const last = ei === day.ex.length - 1 && s === sets;
-        if (!last) push({ phase: "rest", sec: rest, name: "Rest", jp: "休憩", vol: rest + "秒", set: setLbl });
+        if (!last) push({ phase: "rest", sec: rest, name: "Rest", jp: "Take a breather", vol: rest + "s", set: setLbl });
       }
     });
   } else {
     day.ex.forEach((ex, ei) => {
       const L = ex.levels[lv];
-      const base = "種目 " + (ei + 1) + "/" + day.ex.length;
+      const base = "Exercise " + (ei + 1) + "/" + day.ex.length;
       if (ex.kind === "emom") {
         const reps = ex.repsByLevel ? ex.repsByLevel[lv] : ex.reps ?? "";
         const rounds = ex.rounds ?? 1;
@@ -80,8 +81,8 @@ export function buildTimeline(dayIdx: number, lv: number): Step[] {
             workStep(L.name, ex.jp, {
               sec: window,
               reps,
-              vol: reps + "回 / 1分",
-              set: base + "・EMOM " + r + "/" + rounds,
+              vol: reps + " reps / 1 min",
+              set: base + " · EMOM " + r + "/" + rounds,
               tapDone: true,
               emom: true,
             })
@@ -91,8 +92,8 @@ export function buildTimeline(dayIdx: number, lv: number): Step[] {
         const work = ex.work ?? 30;
         const rest = ex.rest ?? 30;
         for (let r = 1; r <= rounds; r++) {
-          push(workStep(L.name, ex.jp, { sec: work, vol: work + "秒", set: base + "・" + r + "/" + rounds }));
-          if (r < rounds) push({ phase: "rest", sec: rest, name: "Rest", jp: "休憩", vol: rest + "秒", set: base + "・" + r + "/" + rounds });
+          push(workStep(L.name, ex.jp, { sec: work, vol: work + "s", set: base + " · " + r + "/" + rounds }));
+          if (r < rounds) push({ phase: "rest", sec: rest, name: "Rest", jp: "Take a breather", vol: rest + "s", set: base + " · " + r + "/" + rounds });
         }
       } else {
         const sets = ex.sets ?? 1;
@@ -100,15 +101,15 @@ export function buildTimeline(dayIdx: number, lv: number): Step[] {
         const secBySet = ex.secBySet ?? [];
         for (let s = 1; s <= sets; s++) {
           const sec = secBySet[s - 1] ?? 30;
-          const setLbl = base + "・" + s + "set / " + sets;
-          (["右", "左"] as const).forEach((side) => push(workStep(L.name, ex.jp, { sec, vol: sec + "秒（" + side + "）", set: setLbl, side })));
-          if (s < sets) push({ phase: "rest", sec: rest, name: "Rest", jp: "休憩", vol: rest + "秒", set: setLbl });
+          const setLbl = base + " · Set " + s + "/" + sets;
+          (["Right", "Left"] as const).forEach((side) => push(workStep(L.name, ex.jp, { sec, vol: sec + "s (" + side + ")", set: setLbl, side })));
+          if (s < sets) push({ phase: "rest", sec: rest, name: "Rest", jp: "Take a breather", vol: rest + "s", set: setLbl });
         }
       }
     });
   }
 
-  push({ phase: "end", sec: 0, name: "Finish", jp: "完了", vol: "", set: "" });
+  push({ phase: "end", sec: 0, name: "Finish", jp: "Workout complete", vol: "", set: "" });
   return out;
 }
 
@@ -124,10 +125,10 @@ export function buildPreview(dayIdx: number, lv: number): PreviewRow[] {
   return day.ex.map((ex, i) => {
     const L = ex.levels[lv];
     let vol: string;
-    if (ex.kind === "emom") vol = ex.rounds + "分 EMOM";
-    else if (ex.kind === "interval") vol = ex.rounds + "×" + ex.work + "秒";
-    else if (day.mode === "circuit") vol = ex.sides ? day.rounds + "×" + L.sec + "秒" : day.rounds + "×" + L.reps;
-    else if (ex.time) vol = (ex.sets || 1) + "×" + (L.sec ?? ex.secBySet?.[0]) + "秒";
+    if (ex.kind === "emom") vol = ex.window === 60 ? ex.rounds + " min EMOM" : ex.rounds + "×" + ex.window + "s EMOM";
+    else if (ex.kind === "interval") vol = ex.rounds + "×" + ex.work + "s";
+    else if (day.mode === "circuit") vol = ex.sides ? day.rounds + "×" + L.sec + "s" : day.rounds + "×" + L.reps;
+    else if (ex.time) vol = (ex.sets || 1) + "×" + (L.sec ?? ex.secBySet?.[0]) + "s";
     else vol = (ex.sets || 1) + "×" + (ex.repsBySet ? ex.repsBySet.join("/") : L.reps);
     return { i: i + 1, name: L.name, jp: ex.jp, vol };
   });

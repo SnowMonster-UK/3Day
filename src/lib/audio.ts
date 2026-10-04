@@ -1,6 +1,5 @@
 export interface SpeechPart {
   t: string;
-  en?: boolean;
 }
 
 export function stopSpeak() {
@@ -15,8 +14,8 @@ export function say(parts: (SpeechPart | null | undefined | false)[]) {
   if (!window.speechSynthesis) return;
   parts.filter((p): p is SpeechPart => Boolean(p && p.t)).forEach((p) => {
     const u = new SpeechSynthesisUtterance(p.t);
-    u.lang = p.en ? "en-US" : "ja-JP";
-    u.rate = p.en ? 0.95 : 1.05;
+    u.lang = "en-US";
+    u.rate = 0.95;
     try {
       window.speechSynthesis.speak(u);
     } catch {

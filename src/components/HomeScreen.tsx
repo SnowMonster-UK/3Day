@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { PROGRAM, LEVELS } from "@/data/program";
 import { buildTimeline, buildPreview } from "@/lib/timeline";
 import { ACCENT_GREEN } from "@/lib/colors";
+import ExerciseFigure from "@/components/ExerciseFigure";
 
 interface Props {
   dayIdx: number;
@@ -26,14 +27,14 @@ export default function HomeScreen({ dayIdx, level, voice, onSelectDay, onSelect
         <div className="font-mono text-[11px] tracking-[.22em]" style={{ color: ACCENT_GREEN }}>
           WEEKLY x3 CIRCUIT
         </div>
-        <div className="text-[30px] font-black leading-[1.15] tracking-[-.01em]">3日サーキット</div>
+        <div className="text-[30px] font-black leading-[1.15] tracking-[-.01em]">3-Day Circuit</div>
         <div className="text-[13px] leading-relaxed text-[#8b9099]">
-          音声ガイドが種目・レップ・休憩まで自動で読み上げます。画面は見なくてOK。
+          Voice guidance calls out exercises, reps, and rest automatically — no need to watch the screen.
         </div>
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <div className="font-mono text-[10px] tracking-[.18em] text-[#6d7480]">TODAY / 前回の続き</div>
+        <div className="font-mono text-[10px] tracking-[.18em] text-[#6d7480]">TODAY / Continue where you left off</div>
         <div className="flex flex-col gap-2">
           {PROGRAM.map((d, i) => {
             const active = i === dayIdx;
@@ -70,7 +71,7 @@ export default function HomeScreen({ dayIdx, level, voice, onSelectDay, onSelect
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <div className="font-mono text-[10px] tracking-[.18em] text-[#6d7480]">LEVEL / 今日は全種目このレベル</div>
+        <div className="font-mono text-[10px] tracking-[.18em] text-[#6d7480]">LEVEL / Applies to all exercises today</div>
         <div className="flex gap-2">
           {LEVELS.map((l, i) => {
             const active = i === level;
@@ -97,13 +98,19 @@ export default function HomeScreen({ dayIdx, level, voice, onSelectDay, onSelect
         <div className="flex items-baseline justify-between">
           <div className="font-mono text-[10px] tracking-[.18em] text-[#6d7480]">MENU</div>
           <div className="font-mono text-xs text-[#8b9099]">
-            約 {estMin} 分 / {stepCount} ステップ
+            ~{estMin} min / {stepCount} steps
           </div>
         </div>
         <div className="flex flex-col gap-px overflow-hidden rounded-[14px]" style={{ background: "#191c21" }}>
           {preview.map((p) => (
             <div key={p.i} className="flex items-center gap-3 px-4 py-[13px]" style={{ background: "#13161a" }}>
               <div className="w-4 font-mono text-[11px] text-[#5d646f]">{p.i}</div>
+              <div
+                className="flex h-11 w-14 shrink-0 items-center justify-center rounded-[10px]"
+                style={{ background: "#191c21", color: "#c8ccd2" }}
+              >
+                <ExerciseFigure name={p.name} className="h-8 w-11" />
+              </div>
               <div className="flex flex-1 flex-col gap-0.5">
                 <div className="text-sm font-medium">{p.name}</div>
                 <div className="text-[11px] text-[#7d838d]">{p.jp}</div>
@@ -120,14 +127,14 @@ export default function HomeScreen({ dayIdx, level, voice, onSelectDay, onSelect
           className="min-h-[58px] w-full rounded-2xl text-[17px] font-black tracking-[.02em]"
           style={{ background: ACCENT_GREEN, color: "#0e1013" }}
         >
-          スタート
+          Start
         </button>
         <button
           onClick={onToggleVoice}
           className="min-h-[46px] w-full rounded-[14px] text-[13px] font-medium text-[#a9b0ba]"
           style={{ background: "#171a1f" }}
         >
-          音声ガイド：{voice ? "オン" : "オフ"}
+          Voice guide: {voice ? "On" : "Off"}
         </button>
       </div>
     </div>

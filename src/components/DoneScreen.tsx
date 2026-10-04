@@ -12,9 +12,9 @@ interface Props {
 
 export default function DoneScreen({ level, elapsed, stepCount, doneDay, onHome }: Props) {
   const summary = [
-    { k: "合計時間", v: mmss(elapsed) },
-    { k: "レベル", v: LEVELS[level].label },
-    { k: "ステップ数", v: String(stepCount) },
+    { k: "Total Time", v: mmss(elapsed) },
+    { k: "Level", v: LEVELS[level].label },
+    { k: "Steps", v: String(stepCount) },
   ];
 
   return (
@@ -23,8 +23,8 @@ export default function DoneScreen({ level, elapsed, stepCount, doneDay, onHome 
         <div className="font-mono text-[11px] tracking-[.22em]" style={{ color: ACCENT_GREEN }}>
           COMPLETE
         </div>
-        <div className="text-[32px] font-black leading-[1.15]">おつかれさま</div>
-        <div className="text-[13px] text-[#8b9099]">{doneDay} を完了しました。</div>
+        <div className="text-[32px] font-black leading-[1.15]">Well Done!</div>
+        <div className="text-[13px] text-[#8b9099]">You completed {doneDay}.</div>
       </div>
       <div className="flex flex-col gap-px overflow-hidden rounded-2xl" style={{ background: "#191c21" }}>
         {summary.map((s) => (
@@ -39,7 +39,7 @@ export default function DoneScreen({ level, elapsed, stepCount, doneDay, onHome 
         className="min-h-14 w-full rounded-2xl text-base font-black"
         style={{ background: ACCENT_GREEN, color: "#0e1013" }}
       >
-        ホームへ
+        Home
       </button>
     </div>
   );

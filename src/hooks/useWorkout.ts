@@ -75,23 +75,23 @@ export function useWorkout() {
       if (!s) return;
       beep(true);
       if (s.phase === "prep") {
-        speak([{ t: "準備。10秒後に開始します。" }, nx ? { t: nx.name, en: true } : null]);
+        speak([{ t: "Get ready. Starting in 10 seconds." }, nx ? { t: nx.name } : null]);
         return;
       }
       if (s.phase === "rest") {
         const n = steps.slice(i + 1).find((x) => x.phase === "work");
         speak([
-          { t: "休憩 " + s.sec + "秒。" },
-          n ? { t: "次は" } : null,
-          n ? { t: n.name, en: true } : null,
-          n ? { t: (n.vol || "") + "、" + (n.set || "") } : null,
+          { t: "Rest " + s.sec + " seconds." },
+          n ? { t: "Next up" } : null,
+          n ? { t: n.name } : null,
+          n ? { t: (n.vol || "") + ", " + (n.set || "") } : null,
         ]);
         return;
       }
       if (s.phase === "work") {
         speak([
-          { t: s.name, en: true },
-          { t: (s.emom ? "1分以内に" + (s.reps || "") + "回。" : s.vol + "。") + (s.set ? s.set.replace("/", "の") : "") },
+          { t: s.name },
+          { t: (s.emom ? (s.reps || "") + " reps within " + s.sec + " seconds." : s.vol + ".") + (s.set ? ", " + s.set : "") },
         ]);
       }
     },
@@ -107,7 +107,7 @@ export function useWorkout() {
     } catch {
       /* localStorage unavailable */
     }
-    speak([{ t: "ワークアウト完了。おつかれさまでした。" }]);
+    speak([{ t: "Workout complete. Great job!" }]);
     const day = PROGRAM[stateRef.current.dayIdx];
     patch({ screen: "done", elapsed: el, doneDay: day.n + " " + day.title });
   }, [patch, speak]);
@@ -153,7 +153,7 @@ export function useWorkout() {
   const togglePause = useCallback(() => {
     const p = !stateRef.current.paused;
     if (p) stopSpeak();
-    else speak([{ t: "再開" }]);
+    else speak([{ t: "Resume" }]);
     patch({ paused: p });
   }, [patch, speak]);
 
@@ -184,11 +184,11 @@ export function useWorkout() {
         const half = Math.round(s.sec / 2);
         if (!flags.half && sec === half) {
           flags.half = true;
-          speak([{ t: "半分" }]);
+          speak([{ t: "Halfway" }]);
         }
         if (!flags.ten && sec === 10) {
           flags.ten = true;
-          speak([{ t: "残り10秒" }]);
+          speak([{ t: "10 seconds left" }]);
         }
       }
       if (s.sec >= 5 && sec <= 3 && sec >= 1 && !flags["c" + sec]) {
@@ -196,7 +196,7 @@ export function useWorkout() {
         speak([{ t: String(sec) }]);
       }
       if (r <= 0) {
-        if (s.phase === "rest") speak([{ t: "休憩終了" }]);
+        if (s.phase === "rest") speak([{ t: "Rest over" }]);
         goto(st.idx + 1);
         return;
       }
